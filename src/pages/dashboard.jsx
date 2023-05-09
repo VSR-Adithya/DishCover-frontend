@@ -147,7 +147,6 @@ export default function MiniDrawer() {
     return dash
   }
   else {
-    console.log("not logged in")
     window.location.href = '/signin'
   }
 }

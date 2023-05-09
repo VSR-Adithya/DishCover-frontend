@@ -53,7 +53,6 @@ export default function MiniDrawer() {
 
   // add a recipe to the savedRecipeArray_id
   const addRecipe_id = (recipeId) => {
-    console.log("addRecipe_id | adding recipe id : ", recipeId);
     setSavedRecipeArray_id([...savedRecipeArray_id, recipeId]);
   };
 
@@ -83,7 +82,7 @@ export default function MiniDrawer() {
     const fetchRecipe_byId = async (recipeId) => {
       try {
         // Define the endpoint URL
-        const url = `http://localhost:4000/recipes/getRecipeByID/${recipeId}`; // Update the URL based on your API endpoint
+        const url = `https://dishcover-api.onrender.com/recipes/getRecipeByID/${recipeId}`; // Update the URL based on your API endpoint
 
         // Make the API call using fetch()
         const response = await fetch(url, {
@@ -96,7 +95,6 @@ export default function MiniDrawer() {
         // Check if the response is successful
         if (response.ok) {
           const recipeData = await response.json();
-          console.log("Recipe data:", recipeData);
 
           // Handle the recipe data as needed
           return recipeData;
@@ -118,8 +116,6 @@ export default function MiniDrawer() {
     if (!user) {
       console.error("Failed to retrieve user from local storage.");
       return;
-    } else {
-      console.log("user: ", user);
     }
 
     // Get the saved recipes from the user
@@ -129,7 +125,6 @@ export default function MiniDrawer() {
     // Use Promise.all to fetch all recipe data by id concurrently
     Promise.all(savedRecipes && savedRecipes.map(recipeId => fetchRecipe_byId(recipeId)))
       .then(recipesData => {
-        console.log("recipesData: ", recipesData);
         // Do something with the fetched recipe data, e.g., set it to state
         setRecipes(recipesData);
       })
@@ -145,15 +140,13 @@ export default function MiniDrawer() {
   const saveRecipe = async (username, id) => {
     try {
       // Define the endpoint URL
-      const url = "http://localhost:4000/api/user/saveRecipe";
+      const url = "https://dishcover-api.onrender.com/api/user/saveRecipe";
 
       // Create the request body JSON object
       const requestBody = {
         username: username,
         _id: id
       };
-
-      console.log("requestBody : ", requestBody);
 
       // Make the API call using fetch()
       const response = await fetch(url, {
@@ -167,7 +160,6 @@ export default function MiniDrawer() {
       // Check if the response is successful
       if (response.ok) {
         const data = await response.json();
-        console.log("API response data:", data);
         // Handle the API response data as needed
       } else {
         console.error("API call failed with status:", response.status);
@@ -184,16 +176,13 @@ export default function MiniDrawer() {
   const unsaveRecipe = async (username, id) => {
     try {
       // Define the endpoint URL
-      const url = "http://localhost:4000/api/user/removeSavedRecipe";
+      const url = "https://dishcover-api.onrender.com/api/user/removeSavedRecipe";
 
       // Create the request body JSON object
       const requestBody = {
         username: username,
         _id: id
       };
-
-      console.log("requestBody : ", requestBody);
-
       // Make the API call using fetch()
       const response = await fetch(url, {
         method: "POST",
@@ -206,7 +195,6 @@ export default function MiniDrawer() {
       // Check if the response is successful
       if (response.ok) {
         const data = await response.json();
-        console.log("API response data:", data);
         // Handle the API response data as needed
       } else {
         console.error("API call failed with status:", response.status);
@@ -251,16 +239,12 @@ export default function MiniDrawer() {
       // update the user in the database
       await unsaveRecipe(username_h, recipeId);
     }
-
-    console.log("savedRecipes_h : ", savedRecipes_h);
-
   };
 
   const handleShareClick = () => {
     // Copy text to clipboard
     navigator.clipboard.writeText(recipe.recipeURL)
       .then(() => {
-        console.log("Text copied to clipboard:", recipe.recipeURL);
         alert("Recipe URL copied to clipboard!")
         // You can show a success message or perform other actions here
       })
@@ -409,7 +393,6 @@ export default function MiniDrawer() {
     return dashboard
   }
   else {
-    console.log("not logged in")
     window.location.href = '/signin'
   }
 }

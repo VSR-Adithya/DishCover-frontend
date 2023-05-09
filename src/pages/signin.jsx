@@ -25,27 +25,23 @@ const theme = createTheme({
 
 const signin = async (requestData, setError_message) => {
   const { username, password } = requestData
-  console.log("signin function")
 
-  const res = await fetch('http://localhost:4000/api/user/login', {
+  const res = await fetch('https://dishcover-api.onrender.com/api/user/login', {
     method: 'POST',
     headers: {
       'Content-type': 'application/json'
     },
     body: JSON.stringify({ username, password })
   });
-  console.log("res : ", res)
 
   const data = await res.json()
 
   if (!res.ok) {
-    console.log("login failed")
     setError_message(data.error)
 
     // throw Error(data.message || 'Something went wrong')
   }
   if (res.ok) {
-    console.log("login success")
     setError_message('')
 
     // save user in local storage 
@@ -66,9 +62,8 @@ export default function Signin() {
       password: data.get('password')
     };
 
-    console.log(requestData)
     await signin(requestData, setError_message)
-    console.log("error_message : ", error_message)
+    console.error("error_message : ", error_message)
 
     // rederict to dashboard
     if (JSON.parse(localStorage.getItem('user') !== null)) {
@@ -166,13 +161,9 @@ export default function Signin() {
 
   // if already logged in
   if (JSON.parse(localStorage.getItem('user') !== null)) {
-    // console.log("logging out")
     window.location.href = '/dashboard'
-    // // delete user from local storage
-    // localStorage.removeItem('user')
   }
   else {
-    console.log("not logged in")
     return signin_return
   }
 }

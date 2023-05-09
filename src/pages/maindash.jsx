@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import Chip from "@mui/material/Chip";
 import { useNavigate } from "react-router-dom";
 import CssBaseline from "@mui/material/CssBaseline";
-import CloseIcon from '@mui/icons-material/Close';
+import CloseIcon from "@mui/icons-material/Close";
 import Typography from "@mui/material/Typography";
 import IconButton, { IconButtonProps } from "@mui/material/IconButton";
 import Collapse from "@mui/material/Collapse";
@@ -13,7 +13,7 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import "../App.css";
 import Fab from "@mui/material/Fab";
 import AddIcon from "@mui/icons-material/Add";
-import OpenInNewIcon from '@mui/icons-material/OpenInNew';
+import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import CardHeader from "@mui/material/CardHeader";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
@@ -39,8 +39,6 @@ const DrawerHeader = styled("div")(({ theme }) => ({
   ...theme.mixins.toolbar,
 }));
 
-
-
 export default function Maindash() {
   const [isLoading, setIsLoading] = useState(true);
   const [image, setImage] = useState("https://via.placeholder.com/500");
@@ -51,17 +49,6 @@ export default function Maindash() {
   // create an array state variable to store the saved recipe ids
   const [savedRecipeArray_id, setSavedRecipeArray_id] = useState([]);
 
-  // add a recipe to the savedRecipeArray_id
-  const addRecipe_id = (recipeId) => {
-    console.log("addRecipe_id | adding recipe id : ", recipeId);
-    setSavedRecipeArray_id([...savedRecipeArray_id, recipeId]);
-  };
-
-  // remove a recipe from the savedRecipeArray_id
-  const removeRecipe_id = (recipeId) => {
-    setSavedRecipeArray_id(savedRecipeArray_id.filter((_, i) => i !== recipeId));
-  };
-
   if (localStorage.getItem("user") == null) {
     window.location.href = "/signin";
   }
@@ -71,7 +58,7 @@ export default function Maindash() {
   const navigate = useNavigate();
 
   const recipe = (recipeId) => {
-    const url = `/recipe?_id=${recipeId}`
+    const url = `/recipe?_id=${recipeId}`;
     navigate(url);
   };
   //  filter state variables
@@ -96,17 +83,14 @@ export default function Maindash() {
     maxSugar: null,
     maxTotalFat: null,
     maxCarbohydrates: null,
-    maxSaturatedFat: null
+    maxSaturatedFat: null,
   };
 
   // Call fetchRecipes when the component mounts
   useEffect(() => {
-
     fetchRecipes(searchParams);
-    console.log("default recipes : ", recipes);
 
     const user_d = JSON.parse(localStorage.getItem("user"));
-    console.log("user_d.sr : ", user_d.savedRecipes);
     setSavedRecipeArray_id(user_d.savedRecipes);
   }, []);
 
@@ -117,12 +101,9 @@ export default function Maindash() {
 
   // Function to handle API request
   const fetchRecipes = async (sp) => {
-    console.log("fetching recipes");
-    console.log("search params : ", sp);
-    console.log(count)
     try {
       // Send a POST request to the server with the search parameters
-      const response = await fetch("http://localhost:4000/recipes/getRecipes", {
+      const response = await fetch("https://dishcover-api.onrender.com/recipes/getRecipes", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -131,11 +112,12 @@ export default function Maindash() {
       });
       setTimeout(() => {
         setIsLoading(false);
-        setImage("https://cdn.dribbble.com/users/2417352/screenshots/17754676/media/d0b4c1f3ee3a0555f565e273e4294798.png?compress=1&resize=1000x750&vertical=top");
+        setImage(
+          "https://cdn.dribbble.com/users/2417352/screenshots/17754676/media/d0b4c1f3ee3a0555f565e273e4294798.png?compress=1&resize=1000x750&vertical=top"
+        );
       }, 0);
       // Get the JSON response from the server and update state with the recipes
       const recipes = await response.json();
-      console.log("recipes : ", recipes);
       setRecipes(recipes); // Update state with the fetched recipes
     } catch (error) {
       console.error(error);
@@ -145,29 +127,26 @@ export default function Maindash() {
   const saveRecipe = async (username, id) => {
     try {
       // Define the endpoint URL
-      const url = "http://localhost:4000/api/user/saveRecipe";
+      const url = "https://dishcover-api.onrender.com/api/user/saveRecipe";
 
       // Create the request body JSON object
       const requestBody = {
         username: username,
-        _id: id
+        _id: id,
       };
-
-      console.log("requestBody : ", requestBody);
 
       // Make the API call using fetch()
       const response = await fetch(url, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify(requestBody)
+        body: JSON.stringify(requestBody),
       });
 
       // Check if the response is successful
       if (response.ok) {
         const data = await response.json();
-        console.log("API response data:", data);
         // Handle the API response data as needed
       } else {
         console.error("API call failed with status:", response.status);
@@ -183,33 +162,29 @@ export default function Maindash() {
 
   const unsaveRecipe = async (username, id) => {
     // Define the endpoint URL
-    const url = "http://localhost:4000/api/user/removeSavedRecipe";
+    const url = "https://dishcover-api.onrender.com/api/user/removeSavedRecipe";
 
     // Create the request body JSON object
     const requestBody = {
       username: username,
-      _id: id
+      _id: id,
     };
-
-    console.log("requestBody : ", requestBody);
 
     // Make the API call using fetch()
     const response = await fetch(url, {
       method: "POST",
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify(requestBody)
+      body: JSON.stringify(requestBody),
     });
 
     // Check if the response is successful
     if (response.ok) {
       const data = await response.json();
-      console.log("API response data:", data);
       // Handle the API response data as needed
     } else {
-      console.log("API call failed with status:", response);
-      console.log("API call failed with status:", response.status);
+      console.error("API call failed with status:", response.status);
       // Handle the API error as needed
       throw new Error("API call failed with status: " + response.status);
     }
@@ -217,22 +192,38 @@ export default function Maindash() {
 
   const [including_ingredients, setIncluding_ingredients] = useState("");
   const [excluding_ingredients, setExcluding_ingredients] = useState("");
-  const [including_ingredients_list, setIncluding_ingredients_list] = useState([]);
-  const [excluding_ingredients_list, setExcluding_ingredients_list] = useState([]);
+  const [including_ingredients_list, setIncluding_ingredients_list] = useState(
+    []
+  );
+  const [excluding_ingredients_list, setExcluding_ingredients_list] = useState(
+    []
+  );
 
   // adding and removing ingredients
   const addIncluding_ingredients_list = () => {
     // check if the value is not empty and not already in the list
-    if (including_ingredients !== "" && !including_ingredients_list.includes(including_ingredients)) {
+    if (
+      including_ingredients !== "" &&
+      !including_ingredients_list.includes(including_ingredients)
+    ) {
       // if not empty then add to the list
-      setIncluding_ingredients_list([...including_ingredients_list, including_ingredients]);
+      setIncluding_ingredients_list([
+        ...including_ingredients_list,
+        including_ingredients,
+      ]);
     }
   };
   const addExcluding_ingredients_list = () => {
     // check if the value is not empty and not already in the list
-    if (excluding_ingredients !== "" && !excluding_ingredients_list.includes(excluding_ingredients)) {
+    if (
+      excluding_ingredients !== "" &&
+      !excluding_ingredients_list.includes(excluding_ingredients)
+    ) {
       // if not empty then add to the list
-      setExcluding_ingredients_list([...excluding_ingredients_list, excluding_ingredients]);
+      setExcluding_ingredients_list([
+        ...excluding_ingredients_list,
+        excluding_ingredients,
+      ]);
     }
   };
 
@@ -250,11 +241,13 @@ export default function Maindash() {
   const callquery = () => {
     // set the search parameters
     searchParams.recipeName = name === null ? "" : name;
-    searchParams.includedIngredients = including_ingredients_list === null ? [] : including_ingredients_list;
-    searchParams.excludedIngredients = excluding_ingredients_list === null ? [] : excluding_ingredients_list;
+    searchParams.includedIngredients =
+      including_ingredients_list === null ? [] : including_ingredients_list;
+    searchParams.excludedIngredients =
+      excluding_ingredients_list === null ? [] : excluding_ingredients_list;
     searchParams.course = course === null ? "" : course;
     searchParams.cuisine = cuisine === null ? "" : cuisine;
-    searchParams.count = count === null ? 21 * 4 : count;
+    searchParams.count = count === null ? 21 * 2 : count;
     searchParams.minCalories = count === null ? 0 : minCalories;
     searchParams.maxCalories = count === null ? 1000000 : maxCalories;
     searchParams.maxSodium = 10000000;
@@ -262,8 +255,6 @@ export default function Maindash() {
     searchParams.maxTotalFat = 10000000;
     searchParams.maxCarbohydrates = 10000000;
     searchParams.maxSaturatedFat = 10000000;
-
-    console.log("searchParams : ", searchParams);
 
     // call the search function
     handleSearch();
@@ -281,11 +272,9 @@ export default function Maindash() {
   };
 
   const increase_count = () => {
-    // console.log(count)
     setCount(count + 21);
-    console.log(count)
-    callquery()
-  }
+    callquery();
+  };
   const handleSavedClick = async (recipeId) => {
     // get user from local storage
     const user_h = JSON.parse(localStorage.getItem("user"));
@@ -294,7 +283,6 @@ export default function Maindash() {
 
     // check if the recipeID is already saved in savedRecipes_h
     if (!savedRecipes_h.includes(recipeId)) {
-      console.log("not saved");
       // if not then add to the list
       savedRecipes_h.push(recipeId);
       // update the user in the local storage
@@ -303,11 +291,7 @@ export default function Maindash() {
       setSavedRecipeArray_id(savedRecipes_h);
       // update the user in the database
       await saveRecipe(username_h, recipeId);
-
-      console.log("saved");
-    }
-    else {
-      console.log("already saved");
+    } else {
       // if already saved then remove from the list
       const index = savedRecipes_h.indexOf(recipeId);
       if (index > -1) {
@@ -320,19 +304,15 @@ export default function Maindash() {
       setSavedRecipeArray_id(savedRecipes_h);
       // update the user in the database
       await unsaveRecipe(username_h, recipeId);
-
-      console.log("unsaved");
     }
-
-    console.log("savedRecipes_h : ", savedRecipes_h, "\n length : ", savedRecipes_h.length);
   };
 
   const handleShareClick = (url) => {
     // Copy text to clipboard
-    navigator.clipboard.writeText(url)
+    navigator.clipboard
+      .writeText(url)
       .then(() => {
-        console.log("Text copied to clipboard:", url);
-        alert("Recipe URL copied to clipboard!")
+        alert("Recipe URL copied to clipboard!");
         // You can show a success message or perform other actions here
       })
       .catch((error) => {
@@ -359,26 +339,32 @@ export default function Maindash() {
         {...other}
       />
     );
-  };
+  }
   const width = window.innerWidth;
   const height = window.innerHeight;
   const handleIncludedIngredient = (ingredient) => {
-    const updatedList = including_ingredients_list.filter((item) => item !== ingredient);
+    const updatedList = including_ingredients_list.filter(
+      (item) => item !== ingredient
+    );
     setIncluding_ingredients_list(updatedList);
-  }
+  };
   const handleExcludedIngredient = (ingredient) => {
-    const updatedList = excluding_ingredients_list.filter((item) => item !== ingredient);
+    const updatedList = excluding_ingredients_list.filter(
+      (item) => item !== ingredient
+    );
     setExcluding_ingredients_list(updatedList);
-  }
+  };
 
   const [showImage, setShowImage] = useState(false);
   return (
-
     <>
-
       <Crop>DishCover!</Crop>
       {isLoading ? (
-        <img class="rotate" src={process.env.PUBLIC_URL + '/load2.png'} alt="loading" />
+        <img
+          class="rotate"
+          src={process.env.PUBLIC_URL + "/load2.png"}
+          alt="loading"
+        />
       ) : (
         <main>
           <Box
@@ -413,11 +399,10 @@ export default function Maindash() {
                 {filter}
               </Button>
             </Container>
-            <Collapse in={expanded} timeout="auto" unmountOnExit
-            >
-              <Box sx={{ display: 'flex' }}>
-                <Box sx={{ display: 'flex' }} px={2} py={2}>
-                  <Box sx={{ display: 'grid' }} px={2} py={2}>
+            <Collapse in={expanded} timeout="auto" unmountOnExit>
+              <Box sx={{ display: "flex" }}>
+                <Box sx={{ display: "flex" }} px={2} py={2}>
+                  <Box sx={{ display: "grid" }} px={2} py={2}>
                     <TextField
                       id="cuisine"
                       label="Cuisine"
@@ -437,7 +422,7 @@ export default function Maindash() {
                       }}
                     />
                   </Box>
-                  <Box sx={{ display: 'grid' }} px={2} py={2}>
+                  <Box sx={{ display: "grid" }} px={2} py={2}>
                     {/* <TextField
                               id="healthCondition"
                               label="Health Conditions"
@@ -468,9 +453,8 @@ export default function Maindash() {
                   </Box>
                 </Box>
 
-
-                <Box sx={{ display: 'flex' }} px={2} py={2}>
-                  <Box sx={{ display: 'grid' }} px={2} py={2} >
+                <Box sx={{ display: "flex" }} px={2} py={2}>
+                  <Box sx={{ display: "grid" }} px={2} py={2}>
                     <TextField
                       id="req-ing"
                       label="Included Ingredients"
@@ -480,7 +464,8 @@ export default function Maindash() {
                         setIncluding_ingredients(event.target.value);
                       }}
                     />
-                    <IconButton sx={{ borderRadius: '5px', color: 'blue' }}><AddIcon onClick={addIncluding_ingredients_list} />
+                    <IconButton sx={{ borderRadius: "5px", color: "blue" }}>
+                      <AddIcon onClick={addIncluding_ingredients_list} />
                     </IconButton>
 
                     <Stack direction="column" spacing={1}>
@@ -493,16 +478,17 @@ export default function Maindash() {
                               variant="outlined"
                               onDelete={() => handleIncludedIngredient(inItem)}
                               deleteIcon={<CloseIcon />}
-                              style={{ marginRight: '8px', marginBottom: '8px' }}
+                              style={{
+                                marginRight: "8px",
+                                marginBottom: "8px",
+                              }}
                             />
-
                           </>
-
                         );
                       })}
                     </Stack>
                   </Box>
-                  <Box sx={{ display: 'grid' }} px={2} py={2}>
+                  <Box sx={{ display: "grid" }} px={2} py={2}>
                     <TextField
                       id="exc-ing"
                       label="Restricted Ingredients"
@@ -512,11 +498,12 @@ export default function Maindash() {
                         setExcluding_ingredients(event.target.value);
                       }}
                     />
-                    <IconButton sx={{ borderRadius: '5px', color: 'blue' }}><AddIcon onClick={addExcluding_ingredients_list} />
+                    <IconButton sx={{ borderRadius: "5px", color: "blue" }}>
+                      <AddIcon onClick={addExcluding_ingredients_list} />
                     </IconButton>
 
                     <Stack direction="column" spacing={1}>
-                    {excluding_ingredients_list.map((inItem, index) => {
+                      {excluding_ingredients_list.map((inItem, index) => {
                         return (
                           <>
                             <Chip
@@ -525,7 +512,10 @@ export default function Maindash() {
                               variant="outlined"
                               onDelete={() => handleExcludedIngredient(inItem)}
                               deleteIcon={<CloseIcon />}
-                              style={{ marginRight: '8px', marginBottom: '8px' }}
+                              style={{
+                                marginRight: "8px",
+                                marginBottom: "8px",
+                              }}
                             />
                           </>
                         );
@@ -538,8 +528,7 @@ export default function Maindash() {
                 container
                 rowSpacing={1}
                 columnSpacing={{ xs: 1, sm: 2, md: 3 }}
-              >
-              </Grid>
+              ></Grid>
             </Collapse>
             <Container>
               <Button
@@ -552,7 +541,6 @@ export default function Maindash() {
               </Button>
             </Container>
           </Box>
-
 
           <motion.div
             className="container text-center  bg-black"
@@ -584,23 +572,34 @@ export default function Maindash() {
                         <CardMedia
                           component="img"
                           height="60%"
-                          style={{ cursor: 'pointer' }}
+                          style={{ cursor: "pointer" }}
                           image={card.image}
-                          alt="Paella dish"
+                          alt="dishcover"
+                          onError={(e) => {
+                            e.target.src =
+                              "https://img.freepik.com/premium-vector/illustration-vector-isolated-indian-food-dishes-table-top-view-cartoon-doodle-style_325203-160.jpg";
+                          }}
                           onClick={() => recipe(card._id)}
                         />
                         <CardHeader
                           height="20%"
                           title={
-                            <div style={{ display: 'grid', alignItems: 'center', height: '100%', flex: 1 }}>
+                            <div
+                              style={{
+                                display: "grid",
+                                alignItems: "center",
+                                height: "100%",
+                                flex: 1,
+                              }}
+                            >
                               <span
                                 style={{
                                   minWidth: 0,
-                                  whiteSpace: 'nowrap',
-                                  overflow: 'hidden',
-                                  textOverflow: 'ellipsis',
-                                  fontSize: '1rem',
-                                  lineHeight: '1.2',
+                                  whiteSpace: "nowrap",
+                                  overflow: "hidden",
+                                  textOverflow: "ellipsis",
+                                  fontSize: "1rem",
+                                  lineHeight: "1.2",
                                 }}
                               >
                                 {card.recipeName}
@@ -614,23 +613,32 @@ export default function Maindash() {
                           <IconButton
                             aria-label="add to favorites"
                             // color={savedRecipeArray_id && savedRecipeArray_id.includes(card._id) ? "secondary" : "primary"}
-                            style={{ color: savedRecipeArray_id && savedRecipeArray_id.includes(card._id) ? "#f00a81" : "grey" }}
+                            style={{
+                              color:
+                                savedRecipeArray_id &&
+                                savedRecipeArray_id.includes(card._id)
+                                  ? "#f00a81"
+                                  : "grey",
+                            }}
                             onClick={() => {
                               handleSavedClick(card._id);
                             }}
                           >
                             <FavoriteIcon />
                           </IconButton>
-                          <IconButton aria-label="share" onClick={
-                            () => {
+                          <IconButton
+                            aria-label="share"
+                            onClick={() => {
                               handleShareClick(card.recipeURL);
-                            }
-                          }>
+                            }}
+                          >
                             <ShareIcon />
                           </IconButton>
 
-                          <IconButton aria-label="share" onClick={() => recipe(card._id)
-                          }>
+                          <IconButton
+                            aria-label="share"
+                            onClick={() => recipe(card._id)}
+                          >
                             <OpenInNewIcon />
                           </IconButton>
                         </CardActions>
@@ -641,14 +649,16 @@ export default function Maindash() {
             </Grid>
           </motion.div>
 
-          <Button type="submit"
+          <Button
+            type="submit"
             variant="contained"
-            sx={{ mt: 3, mb: 2 }} onClick={increase_count}>View More</Button>
+            sx={{ mt: 3, mb: 2 }}
+            onClick={increase_count}
+          >
+            View More
+          </Button>
         </main>
-
       )}
     </>
-
-  )
-
+  );
 }

@@ -10,15 +10,15 @@ import IconButton, { IconButtonProps } from "@mui/material/IconButton";
 import Collapse from "@mui/material/Collapse";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import "../App.css";
-import MedicationLiquidIcon from '@mui/icons-material/MedicationLiquid';
-import CloseIcon from '@mui/icons-material/Close';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogTitle from '@mui/material/DialogTitle';
+import MedicationLiquidIcon from "@mui/icons-material/MedicationLiquid";
+import CloseIcon from "@mui/icons-material/Close";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogTitle from "@mui/material/DialogTitle";
 import Fab from "@mui/material/Fab";
 import AddIcon from "@mui/icons-material/Add";
-import OpenInNewIcon from '@mui/icons-material/OpenInNew';
+import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import CardHeader from "@mui/material/CardHeader";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
@@ -45,8 +45,6 @@ const DrawerHeader = styled("div")(({ theme }) => ({
   ...theme.mixins.toolbar,
 }));
 
-
-
 export default function Healthdash() {
   const [isLoading, setIsLoading] = useState(true);
   const [image, setImage] = useState("https://via.placeholder.com/500");
@@ -57,17 +55,6 @@ export default function Healthdash() {
   // create an array state variable to store the saved recipe ids
   const [savedRecipeArray_id, setSavedRecipeArray_id] = useState([]);
 
-  // add a recipe to the savedRecipeArray_id
-  const addRecipe_id = (recipeId) => {
-    console.log("addRecipe_id | adding recipe id : ", recipeId);
-    setSavedRecipeArray_id([...savedRecipeArray_id, recipeId]);
-  };
-
-  // remove a recipe from the savedRecipeArray_id
-  const removeRecipe_id = (recipeId) => {
-    setSavedRecipeArray_id(savedRecipeArray_id.filter((_, i) => i !== recipeId));
-  };
-
   if (localStorage.getItem("user") == null) {
     window.location.href = "/signin";
   }
@@ -77,7 +64,7 @@ export default function Healthdash() {
   const navigate = useNavigate();
 
   const recipe = (recipeId) => {
-    const url = `/recipe?_id=${recipeId}`
+    const url = `/recipe?_id=${recipeId}`;
     navigate(url);
   };
   //  filter state variables
@@ -102,14 +89,14 @@ export default function Healthdash() {
     maxSugar: null,
     maxTotalFat: null,
     maxCarbohydrates: null,
-    maxSaturatedFat: null
+    maxSaturatedFat: null,
   });
 
   const [healthReport, setHealthReport] = useState({
     username: JSON.parse(localStorage.getItem("user")).username,
     maxCalories: 0,
     healthConditions: [],
-    foodsToAvoid: []
+    allergy: [],
   });
 
   // Function to set param values
@@ -130,12 +117,10 @@ export default function Healthdash() {
 
   useEffect(() => {
     fetchRecipes(searchParams);
-    console.log("default recipes : ", recipes);
 
     const user_d = JSON.parse(localStorage.getItem("user"));
-    console.log("user_d.sr : ", user_d.savedRecipes);
     setSavedRecipeArray_id(user_d.savedRecipes);
-    console.log("recipes : ", recipes);
+    setHealthReport_async();
   }, []);
 
   // Function to handle "Search" button click
@@ -145,11 +130,9 @@ export default function Healthdash() {
 
   // Function to handle API request
   const fetchRecipes = async (sp) => {
-    console.log("fetching recipes");
-    console.log("search params : ", sp);
     try {
       // Send a POST request to the server with the search parameters
-      const response = await fetch("http://localhost:4000/recipes/getRecipes", {
+      const response = await fetch("https://dishcover-api.onrender.com/recipes/getRecipes", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -158,11 +141,12 @@ export default function Healthdash() {
       });
       setTimeout(() => {
         setIsLoading(false);
-        setImage("https://cdn.dribbble.com/users/2417352/screenshots/17754676/media/d0b4c1f3ee3a0555f565e273e4294798.png?compress=1&resize=1000x750&vertical=top");
+        setImage(
+          "https://cdn.dribbble.com/users/2417352/screenshots/17754676/media/d0b4c1f3ee3a0555f565e273e4294798.png?compress=1&resize=1000x750&vertical=top"
+        );
       }, 0);
       // Get the JSON response from the server and update state with the recipes
       const res = await response.json();
-      console.log("res--------- : ", res);
       setRecipes(res); // Update state with the fetched recipes
     } catch (error) {
       console.error(error);
@@ -172,29 +156,25 @@ export default function Healthdash() {
   const saveRecipe = async (username, id) => {
     try {
       // Define the endpoint URL
-      const url = "http://localhost:4000/api/user/saveRecipe";
+      const url = "https://dishcover-api.onrender.com/api/user/saveRecipe";
 
       // Create the request body JSON object
       const requestBody = {
         username: username,
-        _id: id
+        _id: id,
       };
-
-      console.log("requestBody : ", requestBody);
-
       // Make the API call using fetch()
       const response = await fetch(url, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify(requestBody)
+        body: JSON.stringify(requestBody),
       });
 
       // Check if the response is successful
       if (response.ok) {
         const data = await response.json();
-        console.log("API response data:", data);
         // Handle the API response data as needed
       } else {
         console.error("API call failed with status:", response.status);
@@ -210,33 +190,29 @@ export default function Healthdash() {
 
   const unsaveRecipe = async (username, id) => {
     // Define the endpoint URL
-    const url = "http://localhost:4000/api/user/removeSavedRecipe";
+    const url = "https://dishcover-api.onrender.com/api/user/removeSavedRecipe";
 
     // Create the request body JSON object
     const requestBody = {
       username: username,
-      _id: id
+      _id: id,
     };
-
-    console.log("requestBody : ", requestBody);
 
     // Make the API call using fetch()
     const response = await fetch(url, {
       method: "POST",
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify(requestBody)
+      body: JSON.stringify(requestBody),
     });
 
     // Check if the response is successful
     if (response.ok) {
       const data = await response.json();
-      console.log("API response data:", data);
       // Handle the API response data as needed
     } else {
-      console.log("API call failed with status:", response);
-      console.log("API call failed with status:", response.status);
+      console.error("API call failed with status:", response.status);
       // Handle the API error as needed
       throw new Error("API call failed with status: " + response.status);
     }
@@ -244,22 +220,38 @@ export default function Healthdash() {
 
   const [including_ingredients, setIncluding_ingredients] = useState("");
   const [excluding_ingredients, setExcluding_ingredients] = useState("");
-  const [including_ingredients_list, setIncluding_ingredients_list] = useState([]);
-  const [excluding_ingredients_list, setExcluding_ingredients_list] = useState([]);
+  const [including_ingredients_list, setIncluding_ingredients_list] = useState(
+    []
+  );
+  const [excluding_ingredients_list, setExcluding_ingredients_list] = useState(
+    []
+  );
 
   // adding and removing ingredients
   const addIncluding_ingredients_list = () => {
     // check if the value is not empty and not already in the list
-    if (including_ingredients !== "" && !including_ingredients_list.includes(including_ingredients)) {
+    if (
+      including_ingredients !== "" &&
+      !including_ingredients_list.includes(including_ingredients)
+    ) {
       // if not empty then add to the list
-      setIncluding_ingredients_list([...including_ingredients_list, including_ingredients]);
+      setIncluding_ingredients_list([
+        ...including_ingredients_list,
+        including_ingredients,
+      ]);
     }
   };
   const addExcluding_ingredients_list = () => {
     // check if the value is not empty and not already in the list
-    if (excluding_ingredients !== "" && !excluding_ingredients_list.includes(excluding_ingredients)) {
+    if (
+      excluding_ingredients !== "" &&
+      !excluding_ingredients_list.includes(excluding_ingredients)
+    ) {
       // if not empty then add to the list
-      setExcluding_ingredients_list([...excluding_ingredients_list, excluding_ingredients]);
+      setExcluding_ingredients_list([
+        ...excluding_ingredients_list,
+        excluding_ingredients,
+      ]);
     }
   };
 
@@ -275,22 +267,37 @@ export default function Healthdash() {
   };
   const callquery = (profile_data) => {
     // set the search parameters form profile
-    searchParams.minCalories = profile_data.minCalories === null ? 0 : profile_data.minCalories;
-    searchParams.maxCalories = profile_data.maxCalories === null ? 1000000 : profile_data.maxCalories;
-    searchParams.maxSodium = profile_data.maxSodium === null ? 10000000 : profile_data.maxSodium;
-    searchParams.maxSugar = profile_data.maxSugar === null ? 10000000 : profile_data.maxSugar;
-    searchParams.maxCarbs = profile_data.maxCarbs === null ? 10000000 : profile_data.maxCarbs;
-    searchParams.maxSaturatedFat = profile_data.maxSaturatedFat === null ? 10000000 : profile_data.maxSaturatedFat;
-    searchParams.maxTotalFat = profile_data.maxTotalFat === null ? 10000000 : profile_data.maxTotalFat;
+    searchParams.minCalories =
+      profile_data.minCalories === null ? 0 : profile_data.minCalories;
+    searchParams.maxCalories =
+      profile_data.maxCalories === null ? 1000000 : profile_data.maxCalories;
+    searchParams.maxSodium =
+      profile_data.maxSodium === null ? 10000000 : profile_data.maxSodium;
+    searchParams.maxSugar =
+      profile_data.maxSugar === null ? 10000000 : profile_data.maxSugar;
+    searchParams.maxCarbs =
+      profile_data.maxCarbs === null ? 10000000 : profile_data.maxCarbs;
+    searchParams.maxSaturatedFat =
+      profile_data.maxSaturatedFat === null
+        ? 10000000
+        : profile_data.maxSaturatedFat;
+    searchParams.maxTotalFat =
+      profile_data.maxTotalFat === null ? 10000000 : profile_data.maxTotalFat;
 
     // now set the search parameters from the search bar filters
     searchParams.recipeName = name;
     searchParams.includedIngredients = including_ingredients_list;
 
     // excluding ingredients from the search bar + from the profile
-    let excluding_ingredients_list_prof = profile_data.excludedIngredients === null ? [] : profile_data.excludedIngredients;
+    let excluding_ingredients_list_prof =
+      profile_data.excludedIngredients === null
+        ? []
+        : profile_data.excludedIngredients;
     // add the ingredients from the search bar to the list
-    excluding_ingredients_list_prof = [...excluding_ingredients_list_prof, ...excluding_ingredients_list];
+    excluding_ingredients_list_prof = [
+      ...excluding_ingredients_list_prof,
+      ...excluding_ingredients_list,
+    ];
     searchParams.excludedIngredients = excluding_ingredients_list;
 
     searchParams.course = course;
@@ -315,11 +322,9 @@ export default function Healthdash() {
   };
 
   const increase_count = () => {
-    // console.log(count)
     setCount(count + 21);
-    console.log(count)
-    callquery()
-  }
+    callquery(searchParams);
+  };
   const handleSavedClick = async (recipeId) => {
     // get user from local storage
     const user_h = JSON.parse(localStorage.getItem("user"));
@@ -328,7 +333,6 @@ export default function Healthdash() {
 
     // check if the recipeID is already saved in savedRecipes_h
     if (!savedRecipes_h.includes(recipeId)) {
-      console.log("not saved");
       // if not then add to the list
       savedRecipes_h.push(recipeId);
       // update the user in the local storage
@@ -337,11 +341,7 @@ export default function Healthdash() {
       setSavedRecipeArray_id(savedRecipes_h);
       // update the user in the database
       await saveRecipe(username_h, recipeId);
-
-      console.log("saved");
-    }
-    else {
-      console.log("already saved");
+    } else {
       // if already saved then remove from the list
       const index = savedRecipes_h.indexOf(recipeId);
       if (index > -1) {
@@ -354,19 +354,15 @@ export default function Healthdash() {
       setSavedRecipeArray_id(savedRecipes_h);
       // update the user in the database
       await unsaveRecipe(username_h, recipeId);
-
-      console.log("unsaved");
     }
-
-    console.log("savedRecipes_h : ", savedRecipes_h, "\n length : ", savedRecipes_h.length);
   };
 
   const handleShareClick = (url) => {
     // Copy text to clipboard
-    navigator.clipboard.writeText(url)
+    navigator.clipboard
+      .writeText(url)
       .then(() => {
-        console.log("Text copied to clipboard:", url);
-        alert("Recipe URL copied to clipboard!")
+        alert("Recipe URL copied to clipboard!");
         // You can show a success message or perform other actions here
       })
       .catch((error) => {
@@ -393,84 +389,97 @@ export default function Healthdash() {
         {...other}
       />
     );
-  };
-  const width = window.innerWidth;
-  const height = window.innerHeight;
+  }
   const handleIncludedIngredient = (ingredient) => {
-    const updatedList = including_ingredients_list.filter((item) => item !== ingredient);
+    const updatedList = including_ingredients_list.filter(
+      (item) => item !== ingredient
+    );
     setIncluding_ingredients_list(updatedList);
-  }
+  };
   const handleExcludedIngredient = (ingredient) => {
-    const updatedList = excluding_ingredients_list.filter((item) => item !== ingredient);
+    const updatedList = excluding_ingredients_list.filter(
+      (item) => item !== ingredient
+    );
     setExcluding_ingredients_list(updatedList);
-  }
+  };
   const handleClose = () => {
     setOpen(false);
   };
 
   const [showImage, setShowImage] = useState(false);
   return (
-
     <>
-      <IconButton aria-label="share" label="Health report" ><MedicationLiquidIcon />
-        <Typography onClick={(e) => {
-          setOpen(true)
+      <IconButton
+        aria-label="share"
+        label="Health report"
+        onClick={(e) => {
+          setOpen(true);
           setHealthReport_async();
-        }
-        }>Health report</Typography>
+        }}
+      >
+        <MedicationLiquidIcon />
+        <Typography>Health report</Typography>
       </IconButton>
       <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>Health Report <MedicationLiquidIcon /></DialogTitle>
+        <DialogTitle>
+          Health Report <MedicationLiquidIcon />
+        </DialogTitle>
         <DialogContent>
-
           <TextField
             autoFocus
             margin="dense"
             id="name"
-            value={healthReport.username}
+            defaultValue={healthReport.username}
             label="UserName"
             type="string"
             fullWidth
             variant="standard"
+            InputProps={{
+              readOnly: true,
+            }}
           />
 
           <TextField
             autoFocus
             margin="dense"
             id="name"
-            value={healthReport.maxCalories}
+            defaultValue={healthReport.maxCalories}
             label="Max Clorie Per Day"
             type="string"
             fullWidth
             variant="standard"
+            InputProps={{
+              readOnly: true,
+            }}
           />
 
           <TextField
             autoFocus
             margin="dense"
             id="name"
-            value={healthReport.healthConditions}
+            defaultValue={healthReport.healthConditions}
             label="Health Conditions"
             type="string"
             fullWidth
             variant="standard"
-
+            InputProps={{
+              readOnly: true,
+            }}
           />
 
-          <TextField
+          {/* <TextField
             autoFocus
             margin="dense"
             id="name"
-            value={healthReport.foodsToAvoid}
-            label="Foods to avoid"
+            defaultValue={healthReport.allergy}
+            label="Allergies"
             type="string"
             fullWidth
             variant="standard"
-
-          />
-
-
-
+            InputProps={{
+              readOnly: true,
+            }}
+          /> */}
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>Close</Button>
@@ -478,7 +487,11 @@ export default function Healthdash() {
       </Dialog>
       <Crop>HealCover!</Crop>
       {isLoading ? (
-        <img class="rotate" src={process.env.PUBLIC_URL + '/load2.png'} alt="loading" />
+        <img
+          class="rotate"
+          src={process.env.PUBLIC_URL + "/load2.png"}
+          alt="loading"
+        />
       ) : (
         <main>
           <Box
@@ -513,11 +526,10 @@ export default function Healthdash() {
                 {filter}
               </Button>
             </Container>
-            <Collapse in={expanded} timeout="auto" unmountOnExit
-            >
-              <Box sx={{ display: 'flex' }}>
-                <Box sx={{ display: 'flex' }} px={2} py={2}>
-                  <Box sx={{ display: 'grid' }} px={2} py={2}>
+            <Collapse in={expanded} timeout="auto" unmountOnExit>
+              <Box sx={{ display: "flex" }}>
+                <Box sx={{ display: "flex" }} px={2} py={2}>
+                  <Box sx={{ display: "grid" }} px={2} py={2}>
                     <TextField
                       id="cuisine"
                       label="Cuisine"
@@ -537,7 +549,7 @@ export default function Healthdash() {
                       }}
                     />
                   </Box>
-                  <Box sx={{ display: 'grid' }} px={2} py={2}>
+                  <Box sx={{ display: "grid" }} px={2} py={2}>
                     {/* <TextField
                               id="healthCondition"
                               label="Health Conditions"
@@ -568,9 +580,8 @@ export default function Healthdash() {
                   </Box>
                 </Box>
 
-
-                <Box sx={{ display: 'flex' }} px={2} py={2}>
-                  <Box sx={{ display: 'grid' }} px={2} py={2} >
+                <Box sx={{ display: "flex" }} px={2} py={2}>
+                  <Box sx={{ display: "grid" }} px={2} py={2}>
                     <TextField
                       id="req-ing"
                       label="Included Ingredients"
@@ -580,7 +591,8 @@ export default function Healthdash() {
                         setIncluding_ingredients(event.target.value);
                       }}
                     />
-                    <IconButton sx={{ borderRadius: '5px', color: 'blue' }}><AddIcon onClick={addIncluding_ingredients_list} />
+                    <IconButton sx={{ borderRadius: "5px", color: "blue" }}>
+                      <AddIcon onClick={addIncluding_ingredients_list} />
                     </IconButton>
 
                     <Stack direction="column" spacing={1}>
@@ -593,16 +605,17 @@ export default function Healthdash() {
                               variant="outlined"
                               onDelete={() => handleIncludedIngredient(inItem)}
                               deleteIcon={<CloseIcon />}
-                              style={{ marginRight: '8px', marginBottom: '8px' }}
+                              style={{
+                                marginRight: "8px",
+                                marginBottom: "8px",
+                              }}
                             />
-
                           </>
-
                         );
                       })}
                     </Stack>
                   </Box>
-                  <Box sx={{ display: 'grid' }} px={2} py={2}>
+                  <Box sx={{ display: "grid" }} px={2} py={2}>
                     <TextField
                       id="exc-ing"
                       label="Restricted Ingredients"
@@ -612,7 +625,8 @@ export default function Healthdash() {
                         setExcluding_ingredients(event.target.value);
                       }}
                     />
-                    <IconButton sx={{ borderRadius: '5px', color: 'blue' }}><AddIcon onClick={addExcluding_ingredients_list} />
+                    <IconButton sx={{ borderRadius: "5px", color: "blue" }}>
+                      <AddIcon onClick={addExcluding_ingredients_list} />
                     </IconButton>
 
                     <Stack direction="column" spacing={1}>
@@ -625,7 +639,10 @@ export default function Healthdash() {
                               variant="outlined"
                               onDelete={() => handleExcludedIngredient(inItem)}
                               deleteIcon={<CloseIcon />}
-                              style={{ marginRight: '8px', marginBottom: '8px' }}
+                              style={{
+                                marginRight: "8px",
+                                marginBottom: "8px",
+                              }}
                             />
                           </>
                         );
@@ -638,8 +655,7 @@ export default function Healthdash() {
                 container
                 rowSpacing={1}
                 columnSpacing={{ xs: 1, sm: 2, md: 3 }}
-              >
-              </Grid>
+              ></Grid>
             </Collapse>
             <Container>
               <Button
@@ -648,14 +664,12 @@ export default function Healthdash() {
                 sx={{ mt: 3, mb: 2 }}
                 onClick={() => {
                   callquery(searchParams);
-                }
-                }
+                }}
               >
                 Search
               </Button>
             </Container>
           </Box>
-
 
           <motion.div
             className="container text-center  bg-black"
@@ -687,23 +701,34 @@ export default function Healthdash() {
                         <CardMedia
                           component="img"
                           height="60%"
-                          style={{ cursor: 'pointer' }}
+                          style={{ cursor: "pointer" }}
                           image={card.image}
-                          alt="Paella dish"
+                          alt="dishcover"
+                          onError={(e) => {
+                            e.target.src =
+                              "https://img.freepik.com/premium-vector/illustration-vector-isolated-indian-food-dishes-table-top-view-cartoon-doodle-style_325203-160.jpg";
+                          }}
                           onClick={() => recipe(card._id)}
                         />
                         <CardHeader
                           height="20%"
                           title={
-                            <div style={{ display: 'grid', alignItems: 'center', height: '100%', flex: 1 }}>
+                            <div
+                              style={{
+                                display: "grid",
+                                alignItems: "center",
+                                height: "100%",
+                                flex: 1,
+                              }}
+                            >
                               <span
                                 style={{
                                   minWidth: 0,
-                                  whiteSpace: 'nowrap',
-                                  overflow: 'hidden',
-                                  textOverflow: 'ellipsis',
-                                  fontSize: '1rem',
-                                  lineHeight: '1.2',
+                                  whiteSpace: "nowrap",
+                                  overflow: "hidden",
+                                  textOverflow: "ellipsis",
+                                  fontSize: "1rem",
+                                  lineHeight: "1.2",
                                 }}
                               >
                                 {card.recipeName}
@@ -717,23 +742,32 @@ export default function Healthdash() {
                           <IconButton
                             aria-label="add to favorites"
                             // color={savedRecipeArray_id && savedRecipeArray_id.includes(card._id) ? "secondary" : "primary"}
-                            style={{ color: savedRecipeArray_id && savedRecipeArray_id.includes(card._id) ? "#f00a81" : "grey" }}
+                            style={{
+                              color:
+                                savedRecipeArray_id &&
+                                savedRecipeArray_id.includes(card._id)
+                                  ? "#f00a81"
+                                  : "grey",
+                            }}
                             onClick={() => {
                               handleSavedClick(card._id);
                             }}
                           >
                             <FavoriteIcon />
                           </IconButton>
-                          <IconButton aria-label="share" onClick={
-                            () => {
+                          <IconButton
+                            aria-label="share"
+                            onClick={() => {
                               handleShareClick(card.recipeURL);
-                            }
-                          }>
+                            }}
+                          >
                             <ShareIcon />
                           </IconButton>
 
-                          <IconButton aria-label="share" onClick={() => recipe(card._id)
-                          }>
+                          <IconButton
+                            aria-label="share"
+                            onClick={() => recipe(card._id)}
+                          >
                             <OpenInNewIcon />
                           </IconButton>
                         </CardActions>
@@ -744,14 +778,16 @@ export default function Healthdash() {
             </Grid>
           </motion.div>
 
-          <Button type="submit"
+          <Button
+            type="submit"
             variant="contained"
-            sx={{ mt: 3, mb: 2 }} onClick={increase_count}>View More</Button>
+            sx={{ mt: 3, mb: 2 }}
+            onClick={increase_count}
+          >
+            View More
+          </Button>
         </main>
-
       )}
     </>
-
-  )
-
+  );
 }

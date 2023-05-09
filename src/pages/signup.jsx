@@ -60,7 +60,7 @@ const signup = async (requestData, setError_message) => {
     allergy,
   } = requestData;
 
-  const res = await fetch("http://localhost:4000/api/user/signup", {
+  const res = await fetch("https://dishcover-api.onrender.com/api/user/signup", {
     method: "POST",
     headers: {
       "Content-type": "application/json",
@@ -86,18 +86,15 @@ const signup = async (requestData, setError_message) => {
       allergy,
     }),
   });
-  console.log("res : ", res);
 
   const data = await res.json();
 
   if (!res.ok) {
-    console.log("login failed");
     setError_message(data.error);
 
     // throw Error(data.message || 'Something went wrong')
   }
   if (res.ok) {
-    console.log("login success");
     setError_message("");
 
     // save user in local storage
@@ -119,11 +116,6 @@ export default function Signup() {
     }
     return true;
   };
-  // const [sex,setSex] = React.useState('')
-  // const handleSex = (event) => {
-  //   setSex(event.targget.value)
-  //   console.log(sex)
-  // }
   const sexRef = useRef(null);
 
   const handleSubmit = async (event) => {
@@ -131,12 +123,9 @@ export default function Signup() {
     var myForm = document.getElementById("myForm");
     var data = new FormData(myForm);
 
-    // const sexValue = sexRef.current.querySelector("[selected]").value;
-    // console.log(sexValue)
-    console.log("data : ", data);
-
     if (comparePasswords() == true) {
       // Prepare request data
+      console.log("data : ", data.get("activitylevel"));
       const requestData = {
         email: data.get("email"),
         username: data.get("username"),
@@ -147,7 +136,7 @@ export default function Signup() {
         sex: data.get("sex"),
         height: data.get("height"),
         weight: data.get("weight"),
-        activityLevel: data.get("activityLevel"),
+        activityLevel: data.get("activitylevel"),
         bloodGrp: data.get("bloodgroup"),
         diabetic: data.get("diabetic") == undefined ? false : true,
         highBloodPressure:
@@ -161,10 +150,9 @@ export default function Signup() {
         isVeg: data.get("isVeg") == undefined ? false : true,
         allergy: data.get("allergy"),
       };
-
-      console.log("requestData", requestData);
+      // console.log("requestData : ", requestData);
       await signup(requestData, setError_message);
-      console.log("error_message : ", error_message);
+      console.error("error_message : ", error_message);
 
       // rederict to dashboard
       if (JSON.parse(localStorage.getItem("user") !== null)) {
@@ -174,7 +162,7 @@ export default function Signup() {
   };
 
   const signuppage = (
-    <form id="myForm" >
+    <form id="myForm">
       <Container>
         <CssBaseline />
         <AppBar
@@ -186,10 +174,9 @@ export default function Signup() {
             borderBottom: (t) => `1px solid ${t.palette.divider}`,
           }}
         ></AppBar>
-        <Grid sx={{ display: 'flex' }} container
-          spacing={3}>
-          <Grid item xs={12} md={6} component="main" >
-            <Container component="main" >
+        <Grid sx={{ display: "flex" }} container spacing={3}>
+          <Grid item xs={12} md={6} component="main">
+            <Container component="main">
               <Paper
                 variant="outlined"
                 sx={{ my: { xs: 3, md: 6 }, p: { xs: 2, md: 3 } }}
@@ -197,10 +184,7 @@ export default function Signup() {
                 <Typography component="h1" variant="h4" align="center">
                   Register
                 </Typography>
-                <Grid
-                  container
-                  spacing={3}
-                >
+                <Grid container spacing={3}>
                   <Grid item xs={12}>
                     <TextField
                       required
@@ -213,7 +197,7 @@ export default function Signup() {
                       variant="standard"
                     />
                   </Grid>
-                  <Grid item xs={12} >
+                  <Grid item xs={12}>
                     <TextField
                       required
                       id="username"
@@ -224,7 +208,7 @@ export default function Signup() {
                       variant="standard"
                     />
                   </Grid>
-                  <Grid item xs={12} md={6} >
+                  <Grid item xs={12} md={6}>
                     <TextField
                       required
                       id="password"
@@ -236,7 +220,7 @@ export default function Signup() {
                       variant="standard"
                     />
                   </Grid>
-                  <Grid item xs={12} md={6} >
+                  <Grid item xs={12} md={6}>
                     <TextField
                       required
                       id="confirmPassword"
@@ -248,7 +232,7 @@ export default function Signup() {
                       variant="standard"
                     />
                   </Grid>
-                  <Grid item xs={12} >
+                  <Grid item xs={12}>
                     <TextField
                       required
                       id="firstName"
@@ -259,7 +243,7 @@ export default function Signup() {
                       variant="standard"
                     />
                   </Grid>
-                  <Grid item xs={12} >
+                  <Grid item xs={12}>
                     <TextField
                       required
                       id="lastName"
@@ -270,7 +254,7 @@ export default function Signup() {
                       variant="standard"
                     />
                   </Grid>
-                  <Grid item xs={12} sm={6} >
+                  <Grid item xs={12} sm={6}>
                     <TextField
                       required
                       id="dob"
@@ -285,7 +269,7 @@ export default function Signup() {
                       }}
                     />
                   </Grid>
-                  <Grid item xs={12} sm={6} >
+                  <Grid item xs={12} sm={6}>
                     <FormControl>
                       <InputLabel id="sex-label" required>
                         Sex
@@ -308,10 +292,7 @@ export default function Signup() {
                 </Grid>
 
                 <React.Fragment>
-                  <Grid
-                    container
-                    spacing={3}
-                  >
+                  <Grid container spacing={3}>
                     <Grid item xs={12} md={4}>
                       <TextField
                         id="height"
@@ -452,8 +433,8 @@ export default function Signup() {
                             width: 150,
                           }}
                         >
-                          <MenuItem value={"Little or not exercise"}>Little or not exercise</MenuItem>
-                          <MenuItem value={"Light exercise of sports 1-3 days a week"}>Light exercise of sports 1-3 days a week</MenuItem>
+                          <MenuItem value={"Little or no exercise"}>Little or no exercise</MenuItem>
+                          <MenuItem value={"Light exercise or sports 1-3 days a week"}>Light exercise or sports 1-3 days a week</MenuItem>
                           <MenuItem value={"Moderate exercise or sports 3-5 days a week"}>
                             Moderate exercise or sports 3-5 days a week
                           </MenuItem>
@@ -476,7 +457,7 @@ export default function Signup() {
                     variant="contained"
                     sx={{ mt: 3, ml: 1 }}
                     onClick={handleSubmit}
-                  // href="/dashboard"
+                    // href="/dashboard"
                   >
                     Sign Up
                   </Button>
@@ -504,13 +485,11 @@ export default function Signup() {
         </Grid>
       </Container>
     </form>
-  )
+  );
   // if already logged in
-  if (JSON.parse(localStorage.getItem('user') !== null)) {
-    window.location.href = '/dashboard'
-  }
-  else {
-    console.log("not logged in")
-    return signuppage
+  if (JSON.parse(localStorage.getItem("user") !== null)) {
+    window.location.href = "/dashboard";
+  } else {
+    return signuppage;
   }
 }

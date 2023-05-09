@@ -36,7 +36,7 @@ const DrawerHeader = styled("div")(({ theme }) => ({
 
 // api call to get user details
 const getUser = async () => {
-  const response = await fetch("http://localhost:4000/api/user/getUser", {
+  const response = await fetch("https://dishcover-api.onrender.com/api/user/getUser", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -57,11 +57,10 @@ export const getHealthReport = async () => {
 
   //  make api call to get use details and get health conditions
   let userDetails = await getUser({ username: user.username });
-  console.log("userDetails : ", userDetails);
 
   const activity_cal_conv = {
-    "Little or not exercise": 1.2,
-    "Light exercise of sports 1-3 days a week": 1.375,
+    "Little or no exercise": 1.2,
+    "Light exercise or sports 1-3 days a week": 1.375,
     "Moderate exercise or sports 3-5 days a week": 1.55,
     "Hard exercise or sports 6-7 days a week": 1.725,
     "Very hard exercise or sports, training twice a day": 1.9,
@@ -82,6 +81,8 @@ export const getHealthReport = async () => {
     },
   };
 
+
+
   const diabetic = userDetails.diabetic;
   const kidneyDisease = userDetails.kidneyDisease;
   const heartDisease = userDetails.heartDisease;
@@ -90,53 +91,64 @@ export const getHealthReport = async () => {
   const isVeg = userDetails.isVeg;
   const height = userDetails.height;
   const weight = userDetails.weight;
-  const activityLevel = activity_cal_conv[userDetails.activityLevel];
+  const activity = activity_cal_conv[userDetails.activityLevel];
   const age = moment().diff(userDetails.dob, "years");
   const sex = userDetails.sex;
 
   const BMR =
-    sex_cal_conv[sex][0] +
-    sex_cal_conv[sex][1] * weight +
-    sex_cal_conv[sex][2] * height -
-    sex_cal_conv[sex][3] * age;
+    (sex_cal_conv[sex][0] +
+      sex_cal_conv[sex][1] * weight +
+      sex_cal_conv[sex][2] * height -
+      sex_cal_conv[sex][3] * age) *
+    activity;
 
   let healthReport = {
-    userName: user.username,
-    maxCalories: BMR,
+    username: user.username,
+    maxCalories:
+      age && sex && height && weight && activity
+        ? BMR.toFixed(2) + " kCal" 
+        : "Fill all your details to get max calories",
     healthConditions: "",
-    allergy: userDetails.allergy,
-  }
+    allergy: userDetails.allergy === "" ? "None" : userDetails.allergy,
+  };
 
   //  for heat=lth condituion will be string seperated by comma
   if (highBloodPressure) {
-    healthReport.healthConditions += "High Blood Pressure,";
+    healthReport.healthConditions += " High Blood Pressure,";
   }
 
   if (diabetic) {
-    healthReport.healthConditions += "Diabetic,";
+    healthReport.healthConditions += " Diabetic,";
   }
 
   if (kidneyDisease) {
-    healthReport.healthConditions += "Kidney Disease,";
+    healthReport.healthConditions += " Kidney Disease,";
   }
 
   if (heartDisease) {
-    healthReport.healthConditions += "Heart Disease,";
+    healthReport.healthConditions += " Heart Disease,";
   }
 
   if (lactoseIntolerance) {
-    healthReport.healthConditions += "Lactose Intolerance,";
+    healthReport.healthConditions += " Lactose Intolerance,";
   }
 
   if (isVeg) {
-    healthReport.healthConditions += "Vegetarian,";
+    healthReport.healthConditions += " Vegetarian,";
   }
+
+  // remove first space
+  healthReport.healthConditions = healthReport.healthConditions.slice(1);
 
   // remove last comma
   healthReport.healthConditions = healthReport.healthConditions.slice(0, -1);
 
+  if (healthReport.healthConditions === "") {
+    healthReport.healthConditions = "None";
+  }
+
   return healthReport;
-}
+};
 
 // api call to update user details
 const update = async (requestData, setError_message) => {
@@ -161,7 +173,7 @@ const update = async (requestData, setError_message) => {
     allergy,
   } = requestData;
 
-  const res = await fetch("http://localhost:4000/api/user/updateUserDetails", {
+  const res = await fetch("https://dishcover-api.onrender.com/api/user/updateUserDetails", {
     method: "POST",
     headers: {
       "Content-type": "application/json",
@@ -187,18 +199,15 @@ const update = async (requestData, setError_message) => {
       allergy,
     }),
   });
-  console.log("res : ", res);
 
   const data = await res.json();
 
   if (!res.ok) {
-    console.log("update failed");
     setError_message(data.error);
 
     // throw Error(data.message || 'Something went wrong')
   }
   if (res.ok) {
-    console.log("update success");
     setError_message("");
 
     // save user in local storage
@@ -212,10 +221,9 @@ export const getSearchParam = async () => {
 
   //  make api call to get use details and get health conditions
   let userDetails = await getUser({ username: user.username });
-  console.log("userDetails : ", userDetails);
 
   const activity_cal_conv = {
-    "Little or not exercise": 1.2,
+    "Little or no exercise": 1.2,
     "Light exercise of sports 1-3 days a week": 1.375,
     "Moderate exercise or sports 3-5 days a week": 1.55,
     "Hard exercise or sports 6-7 days a week": 1.725,
@@ -245,7 +253,7 @@ export const getSearchParam = async () => {
   const isVeg = userDetails.isVeg;
   const height = userDetails.height;
   const weight = userDetails.weight;
-  const activityLevel = activity_cal_conv[userDetails.activityLevel];
+  const activity = activity_cal_conv[userDetails.activityLevel];
   const age = moment().diff(userDetails.dob, "years");
   const sex = userDetails.sex;
 
@@ -310,7 +318,16 @@ export const getSearchParam = async () => {
 
   if (lactoseIntolerance) {
     // updated excluded ingredient to account for lactose intolerance
-    searchParams["excludedIngredients"].push("milk", "cheese", "yogurt");
+    searchParams["excludedIngredients"].push(
+      "milk",
+      "cheese",
+      "yogurt",
+      "curd",
+      "butter",
+      "ghee",
+      "paneer",
+      "cream"
+    );
   }
 
   if (isVeg) {
@@ -328,22 +345,16 @@ export const getSearchParam = async () => {
   }
 
   if (BMR) {
-    if(BMR >=10){
-      searchParams["maxCalories"] = (BMR) * (activityLevel);
+    if (BMR >= 10) {
+      searchParams["maxCalories"] = BMR * activity;
     }
   }
-
-  console.log(
-    "!!!!!!!!!!!!!!searchParams----- : ",
-    searchParams["excludedIngredients"]
-  );
 
   return searchParams;
 };
 
 export default function MiniDrawer() {
   const theme = useTheme();
-  const [userDetails, setUserDetails] = useState({});
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [firstName, setFirstName] = useState("");
@@ -386,7 +397,7 @@ export default function MiniDrawer() {
 
   useEffect(() => {
     const getUserDetails = async () => {
-      const response = await fetch("http://localhost:4000/api/user/getUser", {
+      const response = await fetch("https://dishcover-api.onrender.com/api/user/getUser", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -396,7 +407,6 @@ export default function MiniDrawer() {
 
       try {
         const parseRes = await response.json();
-        setUserDetails(parseRes);
         setUsername(parseRes.username);
         setEmail(parseRes.email);
         setFirstName(parseRes.firstName);
@@ -414,6 +424,8 @@ export default function MiniDrawer() {
         setLactose(parseRes.lactoseIntolerance);
         setIsveg(parseRes.isVeg);
         setAllergy(parseRes.allergy);
+        console.log(parseRes)
+        console.log("activity level", parseRes.activityLevel)
       } catch (err) {
         console.error(err.message);
       }
@@ -424,7 +436,7 @@ export default function MiniDrawer() {
   useEffect(() => {
     const updateUserDetails = async () => {
       const response = await fetch(
-        "http://localhost:4000/api/user/updateUserDetails",
+        "https://dishcover-api.onrender.com/api/user/updateUserDetails",
         {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
@@ -434,7 +446,6 @@ export default function MiniDrawer() {
 
       try {
         const parseRes = await response.json();
-        console.log(parseRes);
       } catch (err) {
         console.error(err.message);
       }
@@ -845,10 +856,10 @@ export default function MiniDrawer() {
                                           </MenuItem>
                                           <MenuItem
                                             value={
-                                              "Light exercise or sports 3-5 days a week"
+                                              "Light exercise or sports 1-3 days a week"
                                             }
                                           >
-                                            Light exercise or sports 3-5 days a
+                                            Light exercise or sports 1-3 days a
                                             week
                                           </MenuItem>
                                           <MenuItem
@@ -904,9 +915,6 @@ export default function MiniDrawer() {
                                                 setBloodPressure(
                                                   event.target.checked
                                                 );
-                                                console.log(
-                                                  event.target.checked
-                                                );
                                               }}
                                             />
                                           }
@@ -938,9 +946,6 @@ export default function MiniDrawer() {
                                               defaultChecked={diabetic}
                                               onChange={(event) => {
                                                 setDiabetic(
-                                                  event.target.checked
-                                                );
-                                                console.log(
                                                   event.target.checked
                                                 );
                                               }}
@@ -976,9 +981,6 @@ export default function MiniDrawer() {
                                                 setKidneyDisease(
                                                   event.target.checked
                                                 );
-                                                console.log(
-                                                  event.target.checked
-                                                );
                                               }}
                                             />
                                           }
@@ -1010,9 +1012,6 @@ export default function MiniDrawer() {
                                               defaultChecked={heartDisease}
                                               onChange={(event) => {
                                                 setHeartDisease(
-                                                  event.target.checked
-                                                );
-                                                console.log(
                                                   event.target.checked
                                                 );
                                               }}
@@ -1048,9 +1047,6 @@ export default function MiniDrawer() {
                                                 setLactose(
                                                   event.target.checked
                                                 );
-                                                console.log(
-                                                  event.target.checked
-                                                );
                                               }}
                                             />
                                           }
@@ -1082,9 +1078,6 @@ export default function MiniDrawer() {
                                               defaultChecked={isveg}
                                               onChange={(event) => {
                                                 setIsveg(event.target.checked);
-                                                console.log(
-                                                  event.target.checked
-                                                );
                                               }}
                                             />
                                           }
@@ -1134,7 +1127,6 @@ export default function MiniDrawer() {
   if (JSON.parse(localStorage.getItem("user") !== null)) {
     return profile;
   } else {
-    console.log("not logged in");
     window.location.href = "/signin";
   }
 }

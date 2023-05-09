@@ -108,7 +108,6 @@ export default function Navbar() {
         setOpen(true);
     };
     const handlelogout = () => {
-        console.log("logging out")
         localStorage.removeItem('user')
         window.location.href = '/signin'
     }
