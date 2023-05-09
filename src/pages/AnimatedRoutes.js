@@ -18,15 +18,15 @@ function AnimatedRoutes() {
   return (
     <AnimatePresence mode='wait'>
       <Routes key={location.pathname} location={location}>
-      <Route path="/" element={<Signin />} />
-          <Route path={`${domain}/signup`} element={<Signup />} />
-          <Route path={`${domain}/signin`} element={<Signin />} />
-          <Route path={`${domain}/saved`} element={<Saved />} />
-          <Route path={`${domain}/dashboard`} element={<Dashboard />} />
-          <Route path={`${domain}/Home`} element={<Maindash />} />
-          <Route path={`${domain}/Health`} element={<Healthdash />} />
-          <Route path={`${domain}/profile`} element={<Profile />} />
-          <Route path={`${domain}/recipe`} element={<Recipe />} />
+      <Route path={`${domain}/`} element={<Signin />} />
+          <Route path={"signup"} element={<Signup />} />
+          <Route path={"signin"} element={<Signin />} />
+          <Route path={"saved"} element={<Saved />} />
+          <Route path={"dashboard"} element={<Dashboard />} />
+          <Route path={"Home"} element={<Maindash />} />
+          <Route path={"Health"} element={<Healthdash />} />
+          <Route path={"profile"} element={<Profile />} />
+          <Route path={"recipe"} element={<Recipe />} />
         </Routes>
     </AnimatePresence>
   );
