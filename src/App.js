@@ -4,6 +4,8 @@ import AnimatedRoutes from "./pages/AnimatedRoutes.js";
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import "@fontsource/poppins"
 
+export const domain = process.env.REACT_APP_DOMAIN
+
 const theme = createTheme({
   typography: {
     fontFamily: 'Poppins, sans-serif',

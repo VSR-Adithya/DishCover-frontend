@@ -36,6 +36,7 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import Link from "@mui/material/Link";
 import Navbar from "./navbar";
 import { getSearchParam, getHealthReport } from "./profile";
+import { domain } from "../App";
 const DrawerHeader = styled("div")(({ theme }) => ({
   display: "flex",
   alignItems: "center",
@@ -56,7 +57,7 @@ export default function Healthdash() {
   const [savedRecipeArray_id, setSavedRecipeArray_id] = useState([]);
 
   if (localStorage.getItem("user") == null) {
-    window.location.href = "/signin";
+    window.location.href = `${domain}/signin`;
   }
 
   const theme = useTheme();
@@ -132,13 +133,16 @@ export default function Healthdash() {
   const fetchRecipes = async (sp) => {
     try {
       // Send a POST request to the server with the search parameters
-      const response = await fetch("https://dishcover-api.onrender.com/recipes/getRecipes", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(sp),
-      });
+      const response = await fetch(
+        "https://dishcover-api.onrender.com/recipes/getRecipes",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(sp),
+        }
+      );
       setTimeout(() => {
         setIsLoading(false);
         setImage(
@@ -207,7 +211,7 @@ export default function Healthdash() {
       body: JSON.stringify(requestBody),
     });
 
-    // Check if the response is successful
+      // Check if the response is successful
     if (response.ok) {
       const data = await response.json();
       // Handle the API response data as needed

@@ -22,6 +22,7 @@ import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useLocation } from 'react-router-dom';
 import { Typography } from '@mui/material';
+import { domain } from '../App';
 
 const themes = createTheme({
     //  style:{ backgroundImage:`url('https://static.vecteezy.com/system/resources/previews/001/849/553/original/modern-gold-background-free-vector.jpg')` },
@@ -109,7 +110,7 @@ export default function Navbar() {
     };
     const handlelogout = () => {
         localStorage.removeItem('user')
-        window.location.href = '/signin'
+        window.location.href = `${domain}/signin`
     }
     const [checked, setChecked] = React.useState(true);
 
@@ -147,9 +148,9 @@ export default function Navbar() {
                                         <MenuIcon />
                                     </IconButton>
                                     <Typography style={{fontSize: "small"}}>
-                                        {currentPage === '/profile' && <h1>Profile</h1>}
-                                        {currentPage === '/saved' && <h1>Saved Recipes</h1>}
-                                        {currentPage === '/dashboard' && <h1>Home</h1>}
+                                        {currentPage === `${domain}/profile` && <h1>Profile</h1>}
+                                        {currentPage === `${domain}/saved` && <h1>Saved Recipes</h1>}
+                                        {currentPage === `${domain}/dashboard` && <h1>Home</h1>}
                                     </Typography>
 
                                 </Toolbar>
@@ -167,7 +168,7 @@ export default function Navbar() {
                                             minHeight: 48,
                                             justifyContent: open ? 'initial' : 'center',
                                             px: 2.5,
-                                        }} href="/dashboard"
+                                        }} href={`${domain}/dashboard`}
                                     >
                                         <ListItemIcon
                                             sx={{
@@ -187,7 +188,7 @@ export default function Navbar() {
                                             justifyContent: open ? 'initial' : 'center',
                                             px: 2.5,
                                         }}
-                                        href="/profile"
+                                        href={`${domain}/profile`}
                                     >
                                         <ListItemIcon
                                             sx={{
@@ -206,7 +207,7 @@ export default function Navbar() {
                                             justifyContent: open ? 'initial' : 'center',
                                             px: 2.5,
                                         }}
-                                        href="/saved"
+                                        href={`${domain}/saved`}
                                     >
                                         <ListItemIcon
                                             sx={{

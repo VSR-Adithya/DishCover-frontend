@@ -35,6 +35,7 @@ import Link from "@mui/material/Link";
 import FormControlLabel from '@mui/material/FormControlLabel';
 
 import Navbar from "./navbar";
+import { domain } from "../App";
 
 const IOSSwitch = styled((props) => (
   <Switch focusVisibleClassName=".Mui-focusVisible" disableRipple {...props} />
@@ -147,7 +148,7 @@ export default function MiniDrawer() {
     return dash
   }
   else {
-    window.location.href = '/signin'
+    window.location.href = `${domain}/signin`
   }
 }
 

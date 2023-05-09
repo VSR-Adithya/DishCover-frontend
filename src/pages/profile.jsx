@@ -22,6 +22,7 @@ import Navbar from "./navbar";
 import { useState, useEffect } from "react";
 import moment from "moment";
 import excludeVariablesFromRoot from "@mui/material/styles/excludeVariablesFromRoot";
+import { domain } from "../App";
 
 const drawerWidth = 240;
 
@@ -1127,6 +1128,6 @@ export default function MiniDrawer() {
   if (JSON.parse(localStorage.getItem("user") !== null)) {
     return profile;
   } else {
-    window.location.href = "/signin";
+    window.location.href = `${domain}/signin`
   }
 }

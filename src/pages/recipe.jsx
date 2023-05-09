@@ -413,6 +413,6 @@ export default function Recipe() {
   if (JSON.parse(localStorage.getItem("user") !== null)) {
     return recipepage;
   } else {
-    window.location.href = "/signin";
+    window.location.href = `${domain}/signin`;
   }
 }

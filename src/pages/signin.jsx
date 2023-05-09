@@ -13,6 +13,7 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useState } from 'react';
+import { domain } from '../App';
 
 const theme = createTheme({
   //  style:{ backgroundImage:`url('https://static.vecteezy.com/system/resources/previews/001/849/553/original/modern-gold-background-free-vector.jpg')` },
@@ -67,7 +68,7 @@ export default function Signin() {
 
     // rederict to dashboard
     if (JSON.parse(localStorage.getItem('user') !== null)) {
-      window.location.href = '/dashboard'
+      window.location.href = `${domain}/dashboard`
     }
   };
 
@@ -140,7 +141,7 @@ export default function Signin() {
 
               <Grid container>
                 <Grid item>
-                  <Link href="/signup" variant="body2">
+                  <Link href={`${domain}/signup`} variant="body2">
                     {"Don't have an account? Sign Up"}
                   </Link>
                 </Grid>
@@ -161,7 +162,7 @@ export default function Signin() {
 
   // if already logged in
   if (JSON.parse(localStorage.getItem('user') !== null)) {
-    window.location.href = '/dashboard'
+    window.location.href = `${domain}/dashboard`
   }
   else {
     return signin_return

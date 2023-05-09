@@ -30,6 +30,7 @@ import ShareIcon from "@mui/icons-material/Share";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import Link from "@mui/material/Link";
 import Navbar from "./navbar";
+import { domain } from "../App";
 const DrawerHeader = styled("div")(({ theme }) => ({
   display: "flex",
   alignItems: "center",
@@ -50,7 +51,7 @@ export default function Maindash() {
   const [savedRecipeArray_id, setSavedRecipeArray_id] = useState([]);
 
   if (localStorage.getItem("user") == null) {
-    window.location.href = "/signin";
+    window.location.href = `${domain}/signin`;
   }
 
   const theme = useTheme();

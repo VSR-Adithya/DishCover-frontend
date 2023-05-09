@@ -12,6 +12,7 @@ import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
 import FormGroup from "@mui/material/FormGroup";
 import { FormControl, InputLabel, Select, MenuItem } from "@mui/material";
+import { domain } from "../App";
 
 // const sexOptions = [
 //   { value: "Male", label: "Male" },
@@ -156,7 +157,7 @@ export default function Signup() {
 
       // rederict to dashboard
       if (JSON.parse(localStorage.getItem("user") !== null)) {
-        window.location.href = "/dashboard";
+        window.location.href = `${domain}/dashboard`;
       }
     }
   };
@@ -488,7 +489,7 @@ export default function Signup() {
   );
   // if already logged in
   if (JSON.parse(localStorage.getItem("user") !== null)) {
-    window.location.href = "/dashboard";
+    window.location.href = `${domain}/dashboard`;
   } else {
     return signuppage;
   }

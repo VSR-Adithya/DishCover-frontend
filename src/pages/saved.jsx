@@ -31,6 +31,7 @@ import ShareIcon from "@mui/icons-material/Share";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import Link from "@mui/material/Link";
 import Navbar from "./navbar";
+import { domain } from "../App";
 
 const DrawerHeader = styled("div")(({ theme }) => ({
   display: "flex",
@@ -62,7 +63,7 @@ export default function MiniDrawer() {
   };
 
   if (localStorage.getItem("user") == null) {
-    window.location.href = "/signin";
+    window.location.href = `${domain}/signin`;
   }
 
   const theme = useTheme();
@@ -393,6 +394,6 @@ export default function MiniDrawer() {
     return dashboard
   }
   else {
-    window.location.href = '/signin'
+    window.location.href = `${domain}/signin`
   }
 }
